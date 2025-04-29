@@ -1,8 +1,21 @@
 {
   "2025-04-29": [
-      {
-          "title": "Know Basic Maths",
-          "description": "1. Count Digits <br> 2. Reverse of a Number <br> 3. Number palindrome"
-      }
+    {
+      "title": "Know Basic Maths",
+      "subtasks": [
+        {
+          "description": "Count Digits",
+          "completed": false
+        },
+        {
+          "description": "Reverse of a Number",
+          "completed": false
+        },
+        {
+          "description": "Number palindrome",
+          "completed": false
+        }
+      ]
+    }
   ]
 }
