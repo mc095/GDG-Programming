@@ -1,0 +1,761 @@
+:root {
+    --text-primary: rgba(255, 255, 255, 0.9);
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --text-tertiary: rgba(255, 255, 255, 0.4);
+    --bg-primary: #000000;
+    --bg-secondary: rgba(255, 255, 255, 0.05);
+    --bg-tertiary: rgba(255, 255, 255, 0.1);
+    --border-color: rgba(255, 255, 255, 0.2);
+    --focus-color: rgba(255, 255, 255, 0.6);
+    --highlight-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  @font-face {
+    font-family: 'SF Pro Regular';
+    src: url('/static/fonts/SFPro-Regular.OTF') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  body {
+    font-family: 'SF Pro Regular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Layout */
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+  }
+  
+  .header-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .header-title {
+    font-size: 1.75rem;
+    font-weight: normal;
+    letter-spacing: -0.02em;
+  }
+  
+  .header-subtitle {
+    font-size: 1rem;
+    font-weight: normal;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+  }
+  
+  #current-time {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  
+  .main-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+  }
+  
+  .card-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .card-title {
+    font-size: 1.125rem;
+    font-weight: normal;
+    letter-spacing: -0.01em;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  /* Calendar Specific Styles */
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .calendar-month-year {
+    font-size: 1.125rem;
+    font-weight: normal;
+  }
+  
+  .calendar-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .btn {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .btn:hover {
+    border-color: var(--focus-color);
+  }
+  
+  .btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 6px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-icon:hover {
+    border-color: var(--focus-color);
+  }
+  
+  .btn-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    text-align: center;
+    margin-bottom: 0.25rem;
+  }
+  
+  .weekday {
+    font-size: 0.75rem;
+    font-weight: normal;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, auto);
+    gap: 0.25rem;
+  }
+  
+  .calendar-day {
+    position: relative;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: normal;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 30px;
+  }
+  
+  .calendar-day:hover:not(.calendar-day-disabled) {
+    background: var(--bg-tertiary);
+  }
+  
+  .calendar-day.calendar-day-disabled {
+    color: var(--text-tertiary);
+    cursor: default;
+    background: transparent;
+  }
+  
+  .calendar-day.calendar-day-active {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+  }
+  
+  .calendar-day.calendar-day-today {
+    font-weight: normal;
+    background: var(--highlight-color);
+    border: 1px solid var(--focus-color);
+  }
+  
+  .calendar-day.calendar-day-today::after {
+    content: "";
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 3px;
+    background-color: var(--text-primary);
+    border-radius: 50%;
+  }
+  
+  .calendar-day.calendar-day-has-task::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 3px;
+    height: 3px;
+    background-color: var(--text-primary);
+    border-radius: 50%;
+  }
+  
+  /* Tasks Panel */
+  .tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .selected-date {
+    font-size: 1.125rem;
+    font-weight: normal;
+  }
+  
+  .tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 100%;
+    overflow-y: auto;
+    max-height: 300px;
+    padding-right: 0.25rem;
+  }
+  
+  .task-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+  }
+  
+  .task-item:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(4px);
+  }
+  
+  .task-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .task-checkbox {
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  
+  .task-checkbox:hover {
+    border-color: var(--focus-color);
+  }
+  
+  .task-checkbox:checked {
+    background: var(--focus-color);
+    border-color: var(--focus-color);
+  }
+  
+  .task-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    width: 4px;
+    height: 8px;
+    border: solid var(--text-primary);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    animation: checkmark 0.2s ease-in-out;
+  }
+  
+  @keyframes checkmark {
+    0% {
+        opacity: 0;
+        transform: rotate(45deg) scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(45deg) scale(1);
+    }
+  }
+  
+  .task-indicator {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--text-primary);
+    flex-shrink: 0;
+  }
+  
+  .task-text {
+    font-size: 1rem;
+    font-weight: normal;
+    flex-grow: 1;
+  }
+  
+  .task-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-left: 1.25rem;
+    line-height: 1.4;
+  }
+  
+  .task-completed {
+    text-decoration: line-through;
+    color: var(--text-tertiary);
+  }
+  
+  .task-time {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+  }
+  
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    text-align: center;
+    color: var(--text-tertiary);
+  }
+  
+  .empty-state svg {
+    width: 36px;
+    height: 36px;
+    opacity: 0.5;
+    margin-bottom: 0.75rem;
+  }
+  
+  .empty-state p {
+    font-size: 0.875rem;
+  }
+  
+  /* Loading and Animations */
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+  }
+  
+  .loading-dots {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .loading-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--text-tertiary);
+    border-radius: 50%;
+    animation: dot-animation 1.5s infinite ease-in-out;
+  }
+  
+  .loading-dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .loading-dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes dot-animation {
+    0%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+  }
+  
+  /* Fade-in animation */
+  .fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+    opacity: 0;
+  }
+  
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Responsive Adjustments */
+  @media (min-width: 768px) {
+    .container {
+        padding: 2rem;
+    }
+    
+    .header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+    }
+    
+    .header-title {
+        font-size: 2rem;
+    }
+    
+    .header-subtitle {
+        font-size: 1.125rem;
+    }
+    
+    #current-time {
+        margin-top: 0;
+        font-size: 1rem;
+        text-align: right;
+    }
+    
+    .main-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+    
+    .card {
+        margin-bottom: 0;
+    }
+    
+    .card-header {
+        padding: 1.25rem;
+    }
+    
+    .card-title {
+        font-size: 1.25rem;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    .calendar-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .calendar-month-year {
+        font-size: 1.375rem;
+    }
+    
+    .calendar-actions {
+        gap: 0.75rem;
+    }
+    
+    .btn {
+        padding: 0.625rem 1.25rem;
+        font-size: 1rem;
+    }
+    
+    .btn-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .calendar-weekdays {
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .weekday {
+        font-size: 0.875rem;
+    }
+    
+    .calendar-grid {
+        gap: 0.5rem;
+    }
+    
+    .calendar-day {
+        font-size: 1rem;
+    }
+    
+    .tasks-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .selected-date {
+        font-size: 1.375rem;
+    }
+    
+    .tasks-list {
+        gap: 0.75rem;
+        max-height: 420px;
+    }
+    
+    .task-text {
+        font-size: 1.125rem;
+    }
+    
+    .task-description {
+        font-size: 1rem;
+        margin-left: 2rem;
+    }
+    
+    .task-checkbox {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .task-checkbox:checked::after {
+        top: 3px;
+        left: 6px;
+        width: 5px;
+        height: 9px;
+    }
+  }
+  
+  /* Small phones */
+  @media (max-width: 375px) {
+    .calendar-day {
+        min-height: 25px;
+        font-size: 0.75rem;
+    }
+    
+    .weekday {
+        font-size: 0.65rem;
+    }
+    
+    .btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+    
+    .header-title {
+        font-size: 1.5rem;
+    }
+    
+    .task-text {
+        font-size: 0.875rem;
+    }
+    
+    .task-description {
+        font-size: 0.75rem;
+    }
+    
+    .task-checkbox {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .task-checkbox:checked::after {
+        top: 2px;
+        left: 4px;
+        width: 3px;
+        height: 7px;
+    }
+  }
+  
+  /* Landscape orientation for mobile */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .container {
+        padding: 0.75rem;
+    }
+    
+    .header {
+        padding-bottom: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .calendar-grid {
+        aspect-ratio: auto;
+    }
+    
+    .calendar-day {
+        min-height: 25px;
+    }
+    
+    .tasks-list {
+        max-height: 150px;
+    }
+    
+    .empty-state, .loading {
+        height: 120px;
+    }
+    
+    .task-text {
+        font-size: 0.875rem;
+    }
+    
+    .task-description {
+        font-size: 0.75rem;
+    }
+    
+    .task-checkbox {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .task-checkbox:checked::after {
+        top: 2px;
+        left: 4px;
+        width: 3px;
+        height: 7px;
+    }
+  }
+  
+  /* Added this to handle tablets in portrait mode */
+  @media (min-width: 600px) and (max-width: 767px) {
+    .container {
+        padding: 1.5rem;
+    }
+    
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .header-title {
+        font-size: 1.75rem;
+    }
+    
+    .task-text {
+        font-size: 1rem;
+    }
+    
+    .task-description {
+        font-size: 0.875rem;
+    }
+    
+    .task-checkbox {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .task-checkbox:checked::after {
+        top: 2px;
+        left: 5px;
+        width: 4px;
+        height: 8px;
+    }
+  }
+  
+  /* Tablet landscape mode */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .calendar-day {
+        min-height: 35px;
+    }
+    
+    .task-text {
+        font-size: 1.125rem;
+    }
+    
+    .task-description {
+        font-size: 1rem;
+    }
+    
+    .task-checkbox {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .task-checkbox:checked::after {
+        top: 3px;
+        left: 6px;
+        width: 5px;
+        height: 9px;
+    }
+  }

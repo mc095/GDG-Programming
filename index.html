@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDG X Programming Calendar</title>
+    <link rel="icon" type="image/png" href="/static/images/logo.png">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="header-title">GDG X Programming Calendar</h1>
+                <p class="header-subtitle">Track your programming journey with daily tasks!</p>
+            </div>
+            <div id="current-time"></div>
+        </header>
+        <main class="main-content">
+            <section class="card">
+                <header class="card-header">
+                    <h2 class="card-title">Calendar</h2>
+                </header>
+                <div class="card-body">
+                    <div class="calendar-header">
+                        <h3 class="calendar-month-year" id="monthYear"></h3>
+                        <div class="calendar-actions">
+                            <button class="btn-icon" id="prevMonth">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <button class="btn" id="todayBtn">Today</button>
+                            <button class="btn-icon" id="nextMonth">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <div class="weekday">Sun</div>
+                        <div class="weekday">Mon</div>
+                        <div class="weekday">Tue</div>
+                        <div class="weekday">Wed</div>
+                        <div class="weekday">Thu</div>
+                        <div class="weekday">Fri</div>
+                        <div class="weekday">Sat</div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+            </section>
+            <section class="card">
+                <header class="card-header">
+                    <h2 class="card-title">Tasks</h2>
+                </header>
+                <div class="card-body">
+                    <div class="tasks-header">
+                        <h3 class="selected-date" id="selectedDate"></h3>
+                    </div>
+                    <div class="tasks-list" id="tasksList"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="/static/js/calendar.js"></script>
+</body>
+</html>

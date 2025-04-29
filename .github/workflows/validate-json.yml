@@ -1,0 +1,12 @@
+name: Validate JSON
+on:
+  push:
+    paths:
+      - 'static/topics.json'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Validate JSON
+        run: jq . static/topics.json
