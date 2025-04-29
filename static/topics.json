@@ -1,9 +1,18 @@
 {
   "2025-04-29": [
-      { "title": "Learn JavaScript Basics", "description": "Focus on variables and functions." },
-      { "title": "Complete CSS Tutorial", "description": "" }
+      {
+          "title": "Learn JavaScript Basics",
+          "description": "Focus on variables and functions."
+      },
+      {
+          "title": "Complete CSS Tutorial",
+          "description": ""
+      }
   ],
   "2025-04-30": [
-      { "title": "Build a Simple Webpage", "description": "Use HTML and CSS." }
+      {
+          "title": "Build a Simple Webpage",
+          "description": "Use HTML and CSS."
+      }
   ]
 }
