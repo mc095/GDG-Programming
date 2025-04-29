@@ -1,9 +1,9 @@
 {
-    "2025-04-29": [
-      {"title": "Topic 1", "description": "Description for Topic 1"},
-      {"title": "Topic 2", "description": "Details about Topic 2"}
-    ],
-    "2025-04-30": [
-      {"title": "Topic 3", "description": "Information about Topic 3"}
-    ]
-  }
+  "2025-04-29": [
+      { "title": "Learn JavaScript Basics", "description": "Focus on variables and functions." },
+      { "title": "Complete CSS Tutorial", "description": "" }
+  ],
+  "2025-04-30": [
+      { "title": "Build a Simple Webpage", "description": "Use HTML and CSS." }
+  ]
+}
