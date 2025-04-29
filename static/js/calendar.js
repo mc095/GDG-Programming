@@ -147,18 +147,18 @@ function renderCalendar() {
     }
 }
 
-// Select a date and display its tasks
+
 function selectDate(dateStr) {
-    // Remove active class from previous selection
+    
     const prevSelected = calendarGridElement.querySelector('.calendar-day-active');
     if (prevSelected) {
         prevSelected.classList.remove('calendar-day-active');
     }
     
-    // Update selected date
+    
     selectedDateStr = dateStr;
     
-    // Find and update the newly selected day element if it's in the current view
+    
     const allDays = calendarGridElement.querySelectorAll('.calendar-day:not(.calendar-day-disabled)');
     const selectedDate = new Date(dateStr);
     const selectedDay = selectedDate.getDate();
@@ -170,16 +170,16 @@ function selectDate(dateStr) {
         }
     }
     
-    // Update selected date heading
+    
     selectedDateElement.textContent = formatReadableDate(selectedDate);
     
-    // Display tasks for the selected date
+    
     displayTasks(dateStr);
 }
 
-// Display tasks for the selected date
+
 function displayTasks(dateStr) {
-    // Create loading animation
+    
     tasksListElement.innerHTML = `
         <div class="loading">
             <div class="loading-dots">
@@ -190,13 +190,13 @@ function displayTasks(dateStr) {
         </div>
     `;
     
-    // Simulate loading delay
+    
     setTimeout(() => {
         const tasks = taskMap[dateStr] || [];
         tasksListElement.innerHTML = '';
         
         if (tasks.length === 0) {
-            // Empty state
+            
             tasksListElement.innerHTML = `
                 <div class="empty-state">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -209,21 +209,21 @@ function displayTasks(dateStr) {
             return;
         }
         
-        // Create task items with staggered animation
+        
         tasks.forEach((task, index) => {
             const taskElement = document.createElement('div');
             taskElement.className = 'task-item fade-in';
             taskElement.style.animationDelay = `${0.1 + (index * 0.05)}s`;
             
-            // Get task title and description
+            
             const taskTitle = typeof task === 'string' ? task : task.title;
             const taskDescription = typeof task === 'string' ? '' : (task.description || '');
             
-            // Create unique task ID for checkbox state
+            
             const taskId = `${dateStr}-${index}`;
             const isChecked = checkedTasks.includes(taskId);
             
-            // Create task HTML with checkbox and description if available
+          
             let taskHTML = `
                 <div class="task-header">
                     <input type="checkbox" class="task-checkbox" id="${taskId}" ${isChecked ? 'checked' : ''}>
@@ -237,7 +237,7 @@ function displayTasks(dateStr) {
             
             taskElement.innerHTML = taskHTML;
             
-            // Add checkbox event listener
+            
             const checkbox = taskElement.querySelector('.task-checkbox');
             checkbox.addEventListener('change', () => {
                 const textElement = taskElement.querySelector('.task-text');
@@ -255,12 +255,12 @@ function displayTasks(dateStr) {
             
             tasksListElement.appendChild(taskElement);
         });
-    }, 600); // Simulate network delay
+    }, 600); 
 }
 
-// Event listeners
+
 function setupEventListeners() {
-    // Month navigation buttons
+   
     prevMonthButton.addEventListener('click', () => {
         currentMonth.setMonth(currentMonth.getMonth() - 1);
         renderCalendar();
@@ -271,7 +271,7 @@ function setupEventListeners() {
         renderCalendar();
     });
     
-    // Today button
+  
     todayButton.addEventListener('click', () => {
         currentMonth = new Date(today);
         renderCalendar();
@@ -279,7 +279,7 @@ function setupEventListeners() {
     });
 }
 
-// Initialize and display calendar
+
 async function initializeCalendar() {
     await fetchTasks();
     updateCurrentTime();
@@ -289,5 +289,4 @@ async function initializeCalendar() {
     selectDate(todayStr);
 }
 
-// Start the application
 document.addEventListener('DOMContentLoaded', initializeCalendar);
