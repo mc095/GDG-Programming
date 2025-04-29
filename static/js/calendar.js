@@ -21,7 +21,7 @@ let selectedDateStr = todayStr;
 
 // Task Data
 let taskMap = {};
-let checkedTasks = []; // Array to track checked tasks until refresh
+let checkedTasks = {}; // Object to track checked tasks
 
 // Fetch tasks from topics.json
 async function fetchTasks() {
@@ -29,17 +29,22 @@ async function fetchTasks() {
         const response = await fetch('static/topics.json');
         taskMap = await response.json();
         
-        // Convert string tasks to objects with title and description if they're not already
+        // Initialize checked state from task data
         for (const dateKey in taskMap) {
-            taskMap[dateKey] = taskMap[dateKey].map(task => {
-                if (typeof task === 'string') {
-                    return { title: task, description: '', subtasks: [] };
-                } else if (typeof task === 'object' && task !== null) {
-                    // Ensure subtasks is an array if not provided
-                    task.subtasks = task.subtasks || [];
-                    return task;
-                } else {
-                    return { title: 'Unknown Task', description: '', subtasks: [] };
+            if (!checkedTasks[dateKey]) {
+                checkedTasks[dateKey] = {};
+            }
+            
+            taskMap[dateKey].forEach((task, taskIndex) => {
+                if (!checkedTasks[dateKey][taskIndex]) {
+                    checkedTasks[dateKey][taskIndex] = {};
+                }
+                
+                if (task.subtasks && task.subtasks.length > 0) {
+                    task.subtasks.forEach((subtask, subtaskIndex) => {
+                        // Initialize with completed status from JSON if available
+                        checkedTasks[dateKey][taskIndex][subtaskIndex] = subtask.completed || false;
+                    });
                 }
             });
         }
@@ -73,6 +78,7 @@ function formatReadableDate(date) {
     };
     return date.toLocaleDateString('en-US', options);
 }
+
 // Update current time
 function updateCurrentTime() {
     const now = new Date();
@@ -201,7 +207,17 @@ function displayTasks(dateStr) {
             return;
         }
         
+        // Initialize checked tasks for this date if not exists
+        if (!checkedTasks[dateStr]) {
+            checkedTasks[dateStr] = {};
+        }
+        
         tasks.forEach((task, taskIndex) => {
+            // Initialize checked state for this task if not exists
+            if (!checkedTasks[dateStr][taskIndex]) {
+                checkedTasks[dateStr][taskIndex] = {};
+            }
+            
             const taskElement = document.createElement('div');
             taskElement.className = 'task-item fade-in';
             taskElement.style.animationDelay = `${0.1 + (taskIndex * 0.05)}s`;
@@ -209,28 +225,38 @@ function displayTasks(dateStr) {
             const taskTitle = task.title || 'Untitled Task';
             let taskHTML = `<div class="task-header"><span class="task-text">${taskTitle}</span></div>`;
             
-            // Handle subtasks if they exist
+            // Handle subtasks
             if (task.subtasks && task.subtasks.length > 0) {
+                taskHTML += `<div class="task-subtasks">`;
+                
                 task.subtasks.forEach((subtask, subtaskIndex) => {
-                    const subtaskId = `${dateStr}-${taskIndex}-${subtaskIndex}`;
-                    const isChecked = checkedTasks.includes(subtaskId);
+                    // Initialize completed state from JSON if not already set
+                    if (checkedTasks[dateStr][taskIndex][subtaskIndex] === undefined) {
+                        checkedTasks[dateStr][taskIndex][subtaskIndex] = subtask.completed || false;
+                    }
+                    
+                    const isChecked = checkedTasks[dateStr][taskIndex][subtaskIndex];
                     
                     taskHTML += `
                         <div class="task-subtask">
-                            <input type="checkbox" class="task-checkbox" id="${subtaskId}" ${isChecked ? 'checked' : ''}>
+                            <input type="checkbox" class="task-checkbox" 
+                                data-task-index="${taskIndex}" 
+                                data-subtask-index="${subtaskIndex}" 
+                                ${isChecked ? 'checked' : ''}>
                             <span class="task-text ${isChecked ? 'task-completed' : ''}">${subtask.description}</span>
                         </div>
                     `;
                 });
-            } else {
-                // Fallback for tasks without subtasks (single checkbox for the task itself)
-                const taskId = `${dateStr}-${taskIndex}`;
-                const isChecked = checkedTasks.includes(taskId);
                 
+                taskHTML += `</div>`;
+            } else {
+                // Fallback for tasks without subtasks
                 taskHTML += `
                     <div class="task-subtask">
-                        <input type="checkbox" class="task-checkbox" id="${taskId}" ${isChecked ? 'checked' : ''}>
-                        <span class="task-text ${isChecked ? 'task-completed' : ''}">${task.description || ''}</span>
+                        <input type="checkbox" class="task-checkbox" 
+                            data-task-index="${taskIndex}" 
+                            data-subtask-index="main">
+                        <span class="task-text">${task.description || ''}</span>
                     </div>
                 `;
             }
@@ -240,13 +266,30 @@ function displayTasks(dateStr) {
             // Add event listeners for checkboxes
             taskElement.querySelectorAll('.task-checkbox').forEach(checkbox => {
                 checkbox.addEventListener('change', () => {
-                    const subtaskId = checkbox.id;
+                    const taskIndex = checkbox.getAttribute('data-task-index');
+                    const subtaskIndex = checkbox.getAttribute('data-subtask-index');
                     const textElement = checkbox.nextElementSibling;
+                    
+                    // Update checked state
+                    if (subtaskIndex === 'main') {
+                        // Handle main task checkbox
+                        checkedTasks[dateStr][taskIndex].main = checkbox.checked;
+                    } else {
+                        // Handle subtask checkbox
+                        checkedTasks[dateStr][taskIndex][subtaskIndex] = checkbox.checked;
+                        
+                        // Also update the completed status in the task data
+                        if (taskMap[dateStr] && 
+                            taskMap[dateStr][taskIndex] && 
+                            taskMap[dateStr][taskIndex].subtasks) {
+                            taskMap[dateStr][taskIndex].subtasks[subtaskIndex].completed = checkbox.checked;
+                        }
+                    }
+                    
+                    // Update text styling
                     if (checkbox.checked) {
-                        checkedTasks.push(subtaskId);
                         textElement.classList.add('task-completed');
                     } else {
-                        checkedTasks = checkedTasks.filter(id => id !== subtaskId);
                         textElement.classList.remove('task-completed');
                     }
                 });
