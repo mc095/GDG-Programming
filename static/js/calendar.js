@@ -33,11 +33,13 @@ async function fetchTasks() {
         for (const dateKey in taskMap) {
             taskMap[dateKey] = taskMap[dateKey].map(task => {
                 if (typeof task === 'string') {
-                    return { title: task, description: '' };
+                    return { title: task, description: '', subtasks: [] };
                 } else if (typeof task === 'object' && task !== null) {
+                    // Ensure subtasks is an array if not provided
+                    task.subtasks = task.subtasks || [];
                     return task;
                 } else {
-                    return { title: 'Unknown Task', description: '' };
+                    return { title: 'Unknown Task', description: '', subtasks: [] };
                 }
             });
         }
@@ -71,7 +73,6 @@ function formatReadableDate(date) {
     };
     return date.toLocaleDateString('en-US', options);
 }
-
 // Update current time
 function updateCurrentTime() {
     const now = new Date();
@@ -147,17 +148,13 @@ function renderCalendar() {
     }
 }
 
-
 function selectDate(dateStr) {
-    
     const prevSelected = calendarGridElement.querySelector('.calendar-day-active');
     if (prevSelected) {
         prevSelected.classList.remove('calendar-day-active');
     }
     
-    
     selectedDateStr = dateStr;
-    
     
     const allDays = calendarGridElement.querySelectorAll('.calendar-day:not(.calendar-day-disabled)');
     const selectedDate = new Date(dateStr);
@@ -170,16 +167,13 @@ function selectDate(dateStr) {
         }
     }
     
-    
     selectedDateElement.textContent = formatReadableDate(selectedDate);
-    
     
     displayTasks(dateStr);
 }
 
-
 function displayTasks(dateStr) {
-    
+    // Show loading state
     tasksListElement.innerHTML = `
         <div class="loading">
             <div class="loading-dots">
@@ -190,13 +184,11 @@ function displayTasks(dateStr) {
         </div>
     `;
     
-    
     setTimeout(() => {
         const tasks = taskMap[dateStr] || [];
         tasksListElement.innerHTML = '';
         
         if (tasks.length === 0) {
-            
             tasksListElement.innerHTML = `
                 <div class="empty-state">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -209,58 +201,63 @@ function displayTasks(dateStr) {
             return;
         }
         
-        
-        tasks.forEach((task, index) => {
+        tasks.forEach((task, taskIndex) => {
             const taskElement = document.createElement('div');
             taskElement.className = 'task-item fade-in';
-            taskElement.style.animationDelay = `${0.1 + (index * 0.05)}s`;
+            taskElement.style.animationDelay = `${0.1 + (taskIndex * 0.05)}s`;
             
+            const taskTitle = task.title || 'Untitled Task';
+            let taskHTML = `<div class="task-header"><span class="task-text">${taskTitle}</span></div>`;
             
-            const taskTitle = typeof task === 'string' ? task : task.title;
-            const taskDescription = typeof task === 'string' ? '' : (task.description || '');
-            
-            
-            const taskId = `${dateStr}-${index}`;
-            const isChecked = checkedTasks.includes(taskId);
-            
-          
-            let taskHTML = `
-                <div class="task-header">
-                    <input type="checkbox" class="task-checkbox" id="${taskId}" ${isChecked ? 'checked' : ''}>
-                    <span class="task-text ${isChecked ? 'task-completed' : ''}">${taskTitle}</span>
-                </div>
-            `;
-            
-            if (taskDescription) {
-                taskHTML += `<div class="task-description ${isChecked ? 'task-completed' : ''}">${taskDescription}</div>`;
+            // Handle subtasks if they exist
+            if (task.subtasks && task.subtasks.length > 0) {
+                task.subtasks.forEach((subtask, subtaskIndex) => {
+                    const subtaskId = `${dateStr}-${taskIndex}-${subtaskIndex}`;
+                    const isChecked = checkedTasks.includes(subtaskId);
+                    
+                    taskHTML += `
+                        <div class="task-subtask">
+                            <input type="checkbox" class="task-checkbox" id="${subtaskId}" ${isChecked ? 'checked' : ''}>
+                            <span class="task-text ${isChecked ? 'task-completed' : ''}">${subtask.description}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                // Fallback for tasks without subtasks (single checkbox for the task itself)
+                const taskId = `${dateStr}-${taskIndex}`;
+                const isChecked = checkedTasks.includes(taskId);
+                
+                taskHTML += `
+                    <div class="task-subtask">
+                        <input type="checkbox" class="task-checkbox" id="${taskId}" ${isChecked ? 'checked' : ''}>
+                        <span class="task-text ${isChecked ? 'task-completed' : ''}">${task.description || ''}</span>
+                    </div>
+                `;
             }
             
             taskElement.innerHTML = taskHTML;
             
-            
-            const checkbox = taskElement.querySelector('.task-checkbox');
-            checkbox.addEventListener('change', () => {
-                const textElement = taskElement.querySelector('.task-text');
-                const descElement = taskElement.querySelector('.task-description');
-                if (checkbox.checked) {
-                    checkedTasks.push(taskId);
-                    textElement.classList.add('task-completed');
-                    if (descElement) descElement.classList.add('task-completed');
-                } else {
-                    checkedTasks = checkedTasks.filter(id => id !== taskId);
-                    textElement.classList.remove('task-completed');
-                    if (descElement) descElement.classList.remove('task-completed');
-                }
+            // Add event listeners for checkboxes
+            taskElement.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const subtaskId = checkbox.id;
+                    const textElement = checkbox.nextElementSibling;
+                    if (checkbox.checked) {
+                        checkedTasks.push(subtaskId);
+                        textElement.classList.add('task-completed');
+                    } else {
+                        checkedTasks = checkedTasks.filter(id => id !== subtaskId);
+                        textElement.classList.remove('task-completed');
+                    }
+                });
             });
             
             tasksListElement.appendChild(taskElement);
         });
-    }, 600); 
+    }, 600);
 }
 
-
 function setupEventListeners() {
-   
     prevMonthButton.addEventListener('click', () => {
         currentMonth.setMonth(currentMonth.getMonth() - 1);
         renderCalendar();
@@ -271,14 +268,12 @@ function setupEventListeners() {
         renderCalendar();
     });
     
-  
     todayButton.addEventListener('click', () => {
         currentMonth = new Date(today);
         renderCalendar();
         selectDate(todayStr);
     });
 }
-
 
 async function initializeCalendar() {
     await fetchTasks();
