@@ -124,7 +124,7 @@ function renderCalendar() {
             dayElement.classList.add('calendar-day-active');
         }
         
-        if (taskMap[dateStr] && taskMap[dateKey].length > 0) {
+        if (taskMap[dateStr] && taskMap[dateStr].length > 0) {
             dayElement.classList.add('calendar-day-has-task');
         }
         
