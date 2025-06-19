@@ -17,5 +17,20 @@
         }
       ]
     }
+  ],
+  "2025-06-19" : [
+    {
+        "title": "Know the basics - 2",
+        "subtasks" : [
+            {
+                "description" : "LCM and GCD",
+                "completed" : false
+            }, 
+            {
+                "description" : "Print 1 to N without Loop",
+                "completed" : false
+            }
+        ]
+    }
   ]
 }
